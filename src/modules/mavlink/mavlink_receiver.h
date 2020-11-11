@@ -129,6 +129,8 @@ public:
 	bool component_was_seen(int system_id, int component_id);
 	void print_detailed_rx_stats() const;
 
+	void request_stop() { _should_exit.store(true); }
+
 private:
 	static void *start_trampoline(void *context);
 	void run();
