@@ -183,10 +183,17 @@ private:
 
 	void send_parachute_command();
 
+	enum class RcOverrideBits : int32_t {
+		AUTO_MODE_BIT = (1 << 0),
+		OFFBOARD_MODE_BIT = (1 << 1),
+	};
+
 	DEFINE_PARAMETERS(
 
 		(ParamInt<px4::params::NAV_DLL_ACT>) _param_nav_dll_act,
 		(ParamInt<px4::params::COM_DL_LOSS_T>) _param_com_dl_loss_t,
+
+		(ParamInt<px4::params::COM_RC_OVERRIDE>) _param_com_rc_override,
 
 		(ParamInt<px4::params::COM_HLDL_LOSS_T>) _param_com_hldl_loss_t,
 		(ParamInt<px4::params::COM_HLDL_REG_T>) _param_com_hldl_reg_t,
@@ -254,7 +261,7 @@ private:
 		(ParamInt<px4::params::CBRK_VELPOSERR>) _param_cbrk_velposerr,
 		(ParamInt<px4::params::CBRK_VTOLARMING>) _param_cbrk_vtolarming,
 
-		// Geofrence
+		// Geofence
 		(ParamInt<px4::params::GF_ACTION>) _param_geofence_action,
 
 		// Mavlink
