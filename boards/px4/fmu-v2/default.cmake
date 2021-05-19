@@ -58,7 +58,7 @@ px4_add_board(
 		tone_alarm
 		#uavcan
 	MODULES
-		airspeed_selector
+		#airspeed_selector
 		#attitude_estimator_q
 		battery_status
 		#camera_feedback
@@ -68,8 +68,8 @@ px4_add_board(
 		#esc_battery
 		#events
 		flight_mode_manager
-		fw_att_control
-		fw_pos_control_l1
+		#fw_att_control
+		#fw_pos_control_l1
 		#gyro_calibration
 		#gyro_fft
 		land_detector
