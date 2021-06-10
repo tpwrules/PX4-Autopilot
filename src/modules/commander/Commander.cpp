@@ -2329,6 +2329,7 @@ Commander::run()
 			    && !in_low_battery_failsafe && !_geofence_warning_action_on
 			    && _armed.armed
 			    && !_status_flags.rc_input_blocked
+			    && manual_control_setpoint.valid
 			    && manual_control_setpoint.user_override
 			    && override_enabled) {
 				if (main_state_transition(_status, commander_state_s::MAIN_STATE_POSCTL, _status_flags,
