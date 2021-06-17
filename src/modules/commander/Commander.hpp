@@ -123,7 +123,6 @@ private:
 
 	transition_result_t arm(arm_disarm_reason_t calling_reason, bool run_preflight_checks = true);
 	transition_result_t disarm(arm_disarm_reason_t calling_reason);
-	transition_result_t try_mode_change(main_state_t desired_mode);
 
 	void battery_status_check();
 
@@ -170,12 +169,6 @@ private:
 	void update_control_mode();
 
 	void UpdateEstimateValidity();
-
-	// Set the main system state based on RC and override device inputs
-	transition_result_t set_main_state(bool &changed);
-
-	// Enable override (manual reversion mode) on the system
-	transition_result_t set_main_state_override_on(bool &changed);
 
 	bool shutdown_if_allowed();
 

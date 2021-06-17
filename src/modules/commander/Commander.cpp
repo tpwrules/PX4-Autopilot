@@ -580,73 +580,6 @@ transition_result_t Commander::disarm(arm_disarm_reason_t calling_reason)
 	return arming_res;
 }
 
-transition_result_t
-Commander::try_mode_change(main_state_t desired_mode)
-{
-	transition_result_t res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-
-	if (res == TRANSITION_DENIED) {
-
-		print_reject_mode(desired_mode);
-
-		if (desired_mode == commander_state_s::MAIN_STATE_OFFBOARD) {
-			/* offboard does not have a fallback */
-			return res;
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_MISSION) {
-			desired_mode = commander_state_s::MAIN_STATE_AUTO_LOITER;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_RTL && (res == TRANSITION_DENIED)) {
-			desired_mode = commander_state_s::MAIN_STATE_AUTO_LOITER;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_LAND && (res == TRANSITION_DENIED)) {
-			desired_mode = commander_state_s::MAIN_STATE_AUTO_LOITER;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_TAKEOFF && (res == TRANSITION_DENIED)) {
-			desired_mode = commander_state_s::MAIN_STATE_AUTO_LOITER;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_FOLLOW_TARGET && (res == TRANSITION_DENIED)) {
-			desired_mode = commander_state_s::MAIN_STATE_AUTO_LOITER;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_AUTO_LOITER && (res == TRANSITION_DENIED)) {
-			/* fall back to position control */
-			desired_mode = commander_state_s::MAIN_STATE_POSCTL;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_POSCTL && (res == TRANSITION_DENIED)) {
-			/* fall back to altitude control */
-			desired_mode = commander_state_s::MAIN_STATE_ALTCTL;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_ALTCTL && (res == TRANSITION_DENIED)) {
-			/* fall back to stabilized */
-			desired_mode = commander_state_s::MAIN_STATE_STAB;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-
-		if (desired_mode == commander_state_s::MAIN_STATE_STAB && (res == TRANSITION_DENIED)) {
-			/* fall back to manual */
-			desired_mode = commander_state_s::MAIN_STATE_MANUAL;
-			res = main_state_transition(_status, desired_mode, _status_flags, _internal_state);
-		}
-	}
-
-	return res;
-}
-
 Commander::Commander() :
 	ModuleParams(nullptr),
 	_failure_detector(this)
@@ -2892,26 +2825,6 @@ Commander::control_status_leds(bool changed, const uint8_t battery_warning)
 	}
 
 	_leds_counter++;
-}
-
-transition_result_t
-Commander::set_main_state(bool &changed)
-{
-	if (_safety.override_available && _safety.override_enabled) {
-		return set_main_state_override_on(changed);
-	}
-
-	return 	TRANSITION_NOT_CHANGED;
-}
-
-transition_result_t
-Commander::set_main_state_override_on(bool &changed)
-{
-	const transition_result_t res = main_state_transition(_status, commander_state_s::MAIN_STATE_MANUAL, _status_flags,
-					_internal_state);
-	changed = (res == TRANSITION_CHANGED);
-
-	return res;
 }
 
 void
