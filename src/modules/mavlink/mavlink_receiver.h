@@ -374,7 +374,9 @@ private:
 		(ParamFloat<px4::params::SENS_FLOW_MAXHGT>) _param_sens_flow_maxhgt,
 		(ParamFloat<px4::params::SENS_FLOW_MAXR>)   _param_sens_flow_maxr,
 		(ParamFloat<px4::params::SENS_FLOW_MINHGT>) _param_sens_flow_minhgt,
-		(ParamInt<px4::params::SENS_FLOW_ROT>)      _param_sens_flow_rot
+		(ParamInt<px4::params::SENS_FLOW_ROT>)      _param_sens_flow_rot,
+		(ParamFloat<px4::params::EKF2_MIN_RNG>)     _param_ekf2_min_rng,
+		(ParamFloat<px4::params::EKF2_RNG_A_HMAX>)  _param_ekf2_rng_a_hmax
 	);
 
 	// Disallow copy construction and move assignment.
