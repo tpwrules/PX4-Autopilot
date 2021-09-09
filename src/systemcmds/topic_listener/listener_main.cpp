@@ -32,9 +32,7 @@
  ****************************************************************************/
 
 /**
- * @file listener_main.cpp
- *
- * Tool for listening to topics.
+ * Tool for listening to uORB topics.
  */
 
 #include <px4_platform_common/module.h>
@@ -46,7 +44,7 @@
 #include "topic_listener_generated.hpp"
 
 // Amount of time to wait when listening for a message, before giving up.
-static constexpr float MESSAGE_TIMEOUT_S = 2.0f;
+static constexpr int MESSAGE_TIMEOUT_S = 2;
 
 extern "C" __EXPORT int listener_main(int argc, char *argv[]);
 
@@ -113,9 +111,9 @@ void listener(listener_print_topic_cb cb, const orb_id_t &id, unsigned num_msgs,
 		fds[1].fd = sub;
 		fds[1].events = POLLIN;
 
-		while (msgs_received < num_msgs) {
+		while (num_msgs == 0 || msgs_received < num_msgs) {
 
-			if (poll(&fds[0], 2, int(MESSAGE_TIMEOUT_S * 1000)) > 0) {
+			if (poll(&fds[0], 2, MESSAGE_TIMEOUT_S * 1000) > 0) {
 
 				// Received character from stdin
 				if (fds[0].revents & POLLIN) {
@@ -199,15 +197,6 @@ int listener_main(int argc, char *argv[])
 		}
 	}
 
-	if (num_msgs == 0) {
-		if (topic_rate != 0) {
-			num_msgs = 30 * topic_rate; // arbitrary limit (30 seconds at max rate)
-
-		} else {
-			num_msgs = 1;
-		}
-	}
-
 	listener_generated(topic_name, topic_instance, topic_rate, num_msgs);
 
 	return 0;
@@ -228,6 +217,6 @@ The listener can be exited any time by pressing Ctrl+C, Esc, or Q.
 	PRINT_MODULE_USAGE_ARG("<topic_name>", "uORB topic name", false);
 
 	PRINT_MODULE_USAGE_PARAM_INT('i', 0, 0, ORB_MULTI_MAX_INSTANCES - 1, "Topic instance", true);
-	PRINT_MODULE_USAGE_PARAM_INT('n', 1, 0, 100, "Number of messages", true);
+	PRINT_MODULE_USAGE_PARAM_INT('n', 0, 0, 100, "Number of messages (unlimited 0)", true);
 	PRINT_MODULE_USAGE_PARAM_INT('r', 0, 0, 1000, "Subscription rate (unlimited if 0)", true);
 }
