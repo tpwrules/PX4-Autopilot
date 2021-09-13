@@ -126,6 +126,7 @@ void LoggedTopics::add_default_topics()
 	add_topic_multi("multirotor_motor_limits", 1000, 2);
 	add_topic_multi("rate_ctrl_status", 200, 2);
 	add_topic_multi("telemetry_status", 1000, 4);
+	add_topic_multi("timesync_status", 1000, 3);
 
 	// EKF multi topics (currently max 9 estimators)
 #if CONSTRAINED_MEMORY
