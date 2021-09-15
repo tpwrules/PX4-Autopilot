@@ -43,7 +43,7 @@
 
 #include <drivers/drv_hrt.h>
 #include <drivers/drv_led.h>
-
+#include <lib/perf/perf_counter.h>
 #include <uORB/Subscription.hpp>
 #include <uORB/topics/led_control.h>
 
@@ -64,7 +64,10 @@ class LedController
 {
 public:
 	LedController() = default;
-	~LedController() = default;
+	~LedController()
+	{
+		perf_free(_led_control_sub_lost_perf);
+	};
 
 	/**
 	 * get maxium time between two consecutive calls to update() in us.
@@ -176,6 +179,9 @@ private:
 
 	uORB::Subscription _led_control_sub{ORB_ID(led_control)}; ///< uorb subscription
 	hrt_abstime _last_update_call{0};
+
+	perf_counter_t _led_control_sub_lost_perf{perf_alloc(PC_COUNT, MODULE_NAME": led_control message missed")};
+
 	bool _force_update{true}; ///< force an orb_copy in the beginning
 	bool _breathe_enabled{false}; ///< true if at least one of the led's is currently in breathe mode
 };
