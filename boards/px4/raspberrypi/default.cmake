@@ -76,6 +76,7 @@ px4_add_board(
 		perf
 		pwm
 		sd_bench
+		sd_stress
 		#serial_test
 		system_time
 		shutdown

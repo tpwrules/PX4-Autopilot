@@ -73,6 +73,7 @@ px4_add_board(
 		perf
 		pwm
 		sd_bench
+		sd_stress
 		shutdown
 		tests # tests and test runner
 		#top
