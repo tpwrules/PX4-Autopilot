@@ -1,0 +1,6 @@
+module_name: Zoom H6 Recorder
+serial_config:
+    - command: zoom_h6 start -d ${SERIAL_DEV}
+      port_config_param:
+        name: ZOOM_H6_CFG
+        group: Miscellaneous

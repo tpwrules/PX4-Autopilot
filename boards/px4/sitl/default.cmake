@@ -20,6 +20,7 @@ px4_add_board(
 		#telemetry # all available telemetry drivers
 		tone_alarm
 		#uavcan
+		zoom_h6
 	MODULES
 		airship_att_control
 		airspeed_selector
