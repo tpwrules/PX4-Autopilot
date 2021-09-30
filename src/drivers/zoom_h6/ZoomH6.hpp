@@ -40,11 +40,14 @@
 #include <px4_platform_common/px4_config.h>
 #include <px4_platform_common/defines.h>
 #include <px4_platform_common/px4_work_queue/ScheduledWorkItem.hpp>
+#include <uORB/Subscription.hpp>
+#include <uORB/topics/actuator_controls.h>
 
 using namespace time_literals;
 
 #define ZOOM_H6_COMM_INTERVAL     (100_ms) // 10Hz
 #define ZOOM_H6_BUFFER_SIZE (3) // maximum number of bytes that need to be received at once
+#define ZOOM_H6_CONTROL_IDX (4) // which actuator_controls_2 control to look at
 
 enum comm_state_t {
 	connect, // connect to the recorder by sending null bytes
@@ -114,6 +117,8 @@ private:
 	int open_serial_port();
 
 	void Run() override;
+
+	uORB::Subscription _control_sub{ORB_ID(actuator_controls_2)};
 
 	const char *_serial_port{nullptr};
 	int _fd{-1};

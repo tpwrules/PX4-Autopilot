@@ -33,6 +33,8 @@
 
 #include "ZoomH6.hpp"
 
+#include <uORB/topics/actuator_controls.h>
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -299,6 +301,32 @@ ZoomH6::Run()
 		if (open_serial_port() != PX4_OK) {
 			return;
 		}
+	}
+
+	// check to see if the recorder should on or off
+	bool updated = false;
+	bool should_be_recording = false;
+
+	actuator_controls_s controls;
+	if (_control_sub.update(&controls)) {
+		float val = controls.control[ZOOM_H6_CONTROL_IDX];
+		updated = true;
+		if (val <= -0.875f) { // >= servo value of 1750
+			should_be_recording = true;
+		} else if (val >= -0.625f) { // <= servo value of 1250
+			should_be_recording = false;
+		} else {
+			updated = false;
+		}
+	}
+
+	if (updated && (_should_be_recording != should_be_recording)) {
+		_should_be_recording = should_be_recording;
+		// push the button to update the status ASAP. even if we are in
+		// the wrong state tihs will eventually time out and restat
+		// communication, which will make sure we restart recording if
+		// we are already recording.
+		_comm_state = comm_state_t::push;
 	}
 
 	_comm_state = step_comm(); // communicate with the recorder
