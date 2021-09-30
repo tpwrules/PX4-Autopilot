@@ -55,7 +55,15 @@ ZoomH6::~ZoomH6()
 int
 ZoomH6::receive_exactly(int nbytes)
 {
-	int got = ::read(_fd, _buffer+_buffer_len, ZOOM_H6_BUFFER_SIZE-_buffer_len);
+	int to_get = nbytes - _buffer_len;
+	if (to_get == 0) {
+		return _buffer_len;
+	}
+
+	int got = ::read(_fd, _buffer+_buffer_len, to_get);
+	if (got < 0) { // (probably) nothing to read
+		return _buffer_len;
+	}
 	_buffer_len += got;
 
 	return _buffer_len;
@@ -81,6 +89,7 @@ ZoomH6::step_comm()
 		} else {
 			// make sure there isn't any junk from previous attempts
 			tcflush(_fd, TCIOFLUSH);
+			_buffer_len = 0;
 
 			// try to connect to the recorder again
 			uint8_t val = 0x00;
@@ -116,7 +125,7 @@ ZoomH6::step_comm()
 				// reset communication if it's invalid
 				return comm_state_t::connect;
 			}
-			// check if the RECORD LED is list
+			// check if the RECORD LED is lit
 			_is_recording = !!(_buffer[1] & 1);
 			_timeout = 10; // receive more LED packets
 			return comm_state_t::watch;
@@ -230,17 +239,12 @@ ZoomH6::open_serial_port()
 		return PX4_ERROR;
 	}
 
-	// Clear: data bit size, two stop bits, parity, hardware flow control.
-	uart_config.c_cflag &= ~(CSIZE | CSTOPB | PARENB | CRTSCTS);
-
-	// Set: 8 data bits, enable receiver, ignore modem status lines.
-	uart_config.c_cflag |= (CS8 | CREAD | CLOCAL);
-
-	// Clear: echo, echo new line, canonical input and extended input.
-	uart_config.c_lflag &= (ECHO | ECHONL | ICANON | IEXTEN);
-
-	// Clear ONLCR flag (which appends a CR for every LF).
-	uart_config.c_oflag &= ~ONLCR;
+	// ignore breaks and errors (state machine will just time out and reset)
+	uart_config.c_iflag = (IGNBRK | IGNPAR);
+	uart_config.c_oflag = 0;
+	// 8 bit characters, enable reception, ignore modem control lines
+	uart_config.c_cflag = (CS8 | CREAD | CLOCAL);
+	uart_config.c_lflag = 0;
 
 	// Set the input baud rate in the uart_config struct.
 	int termios_state = cfsetispeed(&uart_config, speed);

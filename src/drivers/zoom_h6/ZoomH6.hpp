@@ -116,9 +116,7 @@ private:
 	void Run() override;
 
 	const char *_serial_port{nullptr};
-
 	int _fd{-1};
-
 	uint8_t _buffer[ZOOM_H6_BUFFER_SIZE];
 	uint8_t _buffer_len{0};
 
