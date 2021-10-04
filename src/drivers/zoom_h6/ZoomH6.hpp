@@ -31,6 +31,80 @@
  *
  ****************************************************************************/
 
+
+/*
+* ZOOM H6 PROTOCOL DESCRIPTION
+*
+* The recorder has a remote control protocol which runs at 2400 baud 8N1 over a
+* four pole 2.5mm jack. The logic level is 3.3V, but it seems to tolerate 5V
+* input just fine.
+*
+* The pinout is as follows, in order:
+* Tip: transmit (recorder -> remote)
+* Ring 1: receive (remote -> recorder)
+* Ring 2: ground
+* Socket: 3.3V
+*
+* The remote must first connect to the recorder by sending 0x00 bytes. Once
+* enough have been sent, the recorder replies with 0x82. Next, the remote sends
+* the following handshake string:
+* 0xC2 0xE1 0x31 0x2E 0x30 0x30 0xA1 0x80 0x80
+* and the recorder replies with:
+* 0x83 0x80 0x81
+*
+* Now that the remote is connected, the recorder will inform the remote of the
+* state of the LEDs using the following packet:
+* 0x84: start byte
+* 0b0ABCDEFG:
+*    A: green PLAY LED on L channel
+*    B: red RECORD LED on L channel
+*    C: green PLAY LED on R channel
+*    D: red RECORD LED on R channel
+*    E: green PLAY LED on 1 channel
+*    F: red RECORD LED on 1 channel
+*    G: red RECORD LED on record button
+* 0b0HIJKLMN:
+*    H: green PLAY LED on 2 channel
+*    I: red RECORD LED on 2 channel
+*    J: green PLAY LED on 3 channel
+*    K: red RECORD LED on 3 channel
+*    L: green PLAY LED on 4 channel
+*    M: red RECORD LED on 4 channel
+*    N: red RECORD LED on record button
+* NOTE: if both PLAY and RECORD LEDs are lit, this indicates SOLO mode (orange)
+*
+* The recorder sends these packets immediately when the handshake is complete,
+* and whenever the state of an LED changes. For whatever reason, the recorder
+* only sends one LED change per packet.
+*
+* Any time the state of a button changes, the remote sends the following packet:
+* 0b100ABCDE:
+*    A: Stop button pressed
+*    B: Next button pressed
+*    C: Back button pressed
+*    D: Play/Pause button pressed
+*    E: Record button pressed
+* 0bFGHIJKLM:
+*    F: Volume Up button pressed
+*    G: Volume Down button pressed
+*    H: Channel 4 button pressed
+*    I: Channel 3 button pressed
+*    J: Channel 2 button pressed
+*    K: Channel 1 button pressed
+*    L: Channel L button pressed
+*    R: Channel R button pressed
+*
+* These are level-sensitive bits, so pressing and releasing a button will first
+* send a packet with that button pressed, then another with it released when it
+* is released. SOLO mode is enabled by holding a particular channel button for
+* at least 1.5 seconds. Otherwise, the duration a button is held doesn't matter.
+* 
+* If the remote sends a byte that the recorder is not expecting, the recorder
+* ignores all further data and stops sending LED change packets. The connection
+* procedure must be restarted from the beginning.
+*/
+
+
 #pragma once
 
 #include <termios.h>
