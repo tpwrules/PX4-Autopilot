@@ -15,6 +15,7 @@ px4_add_board(
 		GPS1:/dev/ttyS2
 		#RC:/dev/ttyS3
 		#CONSOLE:/dev/ttyS4
+		URT6:/dev/ttyS4
 		#FRSKY:/dev/ttyS5
 	DRIVERS
 		adc
@@ -54,6 +55,7 @@ px4_add_board(
 		test_ppm
 		tone_alarm
 		uavcan
+		zoom_h6
 	MODULES
 		airspeed_selector
 		attitude_estimator_q
