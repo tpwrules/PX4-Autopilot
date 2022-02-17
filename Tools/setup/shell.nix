@@ -1,8 +1,8 @@
 let
 	pkgs = import (builtins.fetchTarball {
-		name = "nixos-20.09-2020-10-29";
-		url = "https://github.com/nixos/nixpkgs/archive/edb26126d98bc696f4f3e206583faa65d3d6e818.tar.gz";
-		sha256 = "1cl4ka4kk7kh3bl78g06dhiidazf65q8miyzaxi9930d6gwyzkci";
+		name = "nixos-20.03-2021-05-03";
+		url = "https://github.com/nixos/nixpkgs/archive/1db42b7fe3878f3f5f7a4f2dc210772fd080e205.tar.gz";
+		sha256 = "05k9y9ki6jhaqdhycnidnk5zrdzsdammbk5lsmsbz249hjhhgcgh";
 	}) {};
 	empy = with pkgs.python3Packages; buildPythonPackage rec {
 		pname = "empy";
