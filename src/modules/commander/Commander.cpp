@@ -2680,7 +2680,7 @@ Commander::run()
 			set_tune(tune_control_s::TUNE_ID_BATTERY_WARNING_SLOW);
 
 		} else if (_status.failsafe) {
-			tune_failsafe(true);
+			// tune_failsafe(true);
 
 		} else {
 			set_tune(tune_control_s::TUNE_ID_STOP);
